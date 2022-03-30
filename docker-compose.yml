@@ -1,0 +1,74 @@
+version: "3.8"
+
+services:
+  web:
+    container_name: minerva-web
+    build:
+      context: ./project
+      dockerfile: Dockerfile
+      args:
+        # Update 'VARIANT' to pick a version of Python: 3, 3.10, 3.9, 3.8, 3.7, 3.6
+        # Append -bullseye or -buster to pin to an OS version.
+        # Use -bullseye variants on local arm64/Apple Silicon.
+        VARIANT: 3.10-bullseye
+    image: web:minerva
+    command: uvicorn app.main:app --reload --workers 1 --host 0.0.0.0 --port 8000
+    ports:
+      # Host:Container
+      - 9000:8000
+    environment:
+      - ENVIRONMENT=dev
+      - TESTING=0
+      - DATABASE_URL=postgres://postgres:postgres@web-db:5432/web_dev
+      - DATABASE_TEST_URL=postgres://postgres:postgres@web-db:5432/web_test
+    volumes:
+      - ./project:/usr/src/app
+    networks:
+      - web_gateway
+    depends_on:
+      - web-db
+
+  web-db:
+    container_name: minerva-db
+    build:
+      context: ./project/db
+      dockerfile: Dockerfile
+      args:
+        VARIANT: 14-alpine
+    image: db:minerva
+    restart: unless-stopped
+    ports:
+      - 5432:5432
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_DB: postgres
+      POSTGRES_PASSWORD: postgres
+    healthcheck:
+      test: ["CMD", "pg_isready", "-q", "-d", "postgres", "-U", "postgres"]
+      timeout: 45s
+      interval: 10s
+      retries: 10
+    networks:
+      - web_gateway
+      - db_gateway
+
+  pgadmin:
+    container_name: pgadmin4
+    image: dpage/pgadmin4
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: root
+    ports:
+      - "5050:80"
+    networks:
+      - db_gateway
+
+volumes:
+  postgres-data:
+
+networks:
+  web_gateway:
+  db_gateway:

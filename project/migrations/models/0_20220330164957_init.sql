@@ -1,0 +1,23 @@
+-- upgrade --
+CREATE TABLE IF NOT EXISTS "roles" (
+    "id" SERIAL NOT NULL PRIMARY KEY,
+    "name" VARCHAR(40) NOT NULL UNIQUE,
+    "created_at" TIMESTAMPTZ   DEFAULT CURRENT_TIMESTAMP,
+    "modified_at" TIMESTAMPTZ   DEFAULT CURRENT_TIMESTAMP
+);
+CREATE TABLE IF NOT EXISTS "users" (
+    "id" UUID NOT NULL  PRIMARY KEY,
+    "created_at" TIMESTAMPTZ   DEFAULT CURRENT_TIMESTAMP,
+    "modified_at" TIMESTAMPTZ   DEFAULT CURRENT_TIMESTAMP,
+    "first_name" VARCHAR(35),
+    "last_name" VARCHAR(35),
+    "username" VARCHAR(70) NOT NULL,
+    "email" VARCHAR(255) NOT NULL,
+    "password" VARCHAR(255) NOT NULL
+);
+CREATE TABLE IF NOT EXISTS "aerich" (
+    "id" SERIAL NOT NULL PRIMARY KEY,
+    "version" VARCHAR(255) NOT NULL,
+    "app" VARCHAR(20) NOT NULL,
+    "content" JSONB NOT NULL
+);

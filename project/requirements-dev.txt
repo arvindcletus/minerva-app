@@ -1,0 +1,10 @@
+bandit==1.7.4
+black==22.1.0
+flake8==4.0.1
+isort==5.10.1
+pytest==6.2.0
+pytest-cov==3.0.0
+pytest-xdist==2.5.0
+safety==1.10.3
+
+-r requirements.txt
