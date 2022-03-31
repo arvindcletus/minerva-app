@@ -20,8 +20,13 @@ async def create_role(payload: RolePayloadSchema) -> RoleResponseSchema:
 
 
 @router.get("/{id}/", response_model=RoleSchema)
-async def read_role(id: int) -> RoleSchema:
+async def get_role(id: int) -> RoleSchema:
     role = await crud.get(id)
     if not role:
         raise HTTPException(status_code=404, detail="Role not found")
     return role
+
+
+@router.get("/", response_model=list[RoleSchema])
+async def get_all_roles() -> list[RoleSchema]:
+    return await crud.get_all()

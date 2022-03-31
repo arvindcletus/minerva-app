@@ -3,7 +3,7 @@
 
 from app.models.pydantic import RolePayloadSchema
 from app.models.tortoise import RoleModel
-from typing import Union
+from typing import Union, List
 
 
 async def post(payload: RolePayloadSchema) -> int:
@@ -15,7 +15,12 @@ async def post(payload: RolePayloadSchema) -> int:
 
 
 async def get(id: int) -> Union[dict, None]:
-    name = await RoleModel.filter(id=id).first().values()
-    if name:
-        return name
+    role = await RoleModel.filter(id=id).first().values()
+    if role:
+        return role
     return None
+
+
+async def get_all() -> List:
+    roles = await RoleModel.all().values()
+    return roles
