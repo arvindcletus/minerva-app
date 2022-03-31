@@ -6,14 +6,15 @@ CREATE TABLE IF NOT EXISTS "roles" (
     "modified_at" TIMESTAMPTZ   DEFAULT CURRENT_TIMESTAMP
 );
 CREATE TABLE IF NOT EXISTS "users" (
-    "id" UUID NOT NULL  PRIMARY KEY,
+    "id" SERIAL NOT NULL PRIMARY KEY,
     "created_at" TIMESTAMPTZ   DEFAULT CURRENT_TIMESTAMP,
     "modified_at" TIMESTAMPTZ   DEFAULT CURRENT_TIMESTAMP,
     "first_name" VARCHAR(35),
     "last_name" VARCHAR(35),
-    "username" VARCHAR(70) NOT NULL,
-    "email" VARCHAR(255) NOT NULL,
-    "password" VARCHAR(255) NOT NULL
+    "username" VARCHAR(70) NOT NULL UNIQUE,
+    "email" VARCHAR(255) NOT NULL UNIQUE,
+    "password_hash" VARCHAR(128) NOT NULL,
+    "role_id_id" INT NOT NULL REFERENCES "roles" ("id") ON DELETE CASCADE
 );
 CREATE TABLE IF NOT EXISTS "aerich" (
     "id" SERIAL NOT NULL PRIMARY KEY,

@@ -11,7 +11,7 @@ class TimestampMixin:
 
 
 class NameMixin:
-    name = fields.CharField(40, unique=True)
+    name = fields.CharField(max_length=40, unique=True)
 
 
 class MyAbstractBaseModel(Model):
@@ -21,22 +21,21 @@ class MyAbstractBaseModel(Model):
         abstract = True
 
 
-class UserModel(MyAbstractBaseModel, TimestampMixin):
-    # Overriding the id definition
-    # from MyAbstractBaseModel
-    id = fields.UUIDField(pk=True)
+class RoleModel(MyAbstractBaseModel, NameMixin, TimestampMixin):
+    class Meta:
+        table = "roles"
 
-    # Adding additional fields
+
+class UserModel(MyAbstractBaseModel, TimestampMixin):
+    role_id = fields.ForeignKeyField("models.RoleModel", related_name="roles")
     first_name = fields.CharField(35, null=True)
     last_name = fields.CharField(35, null=True)
-    username = fields.CharField(70, null=False)
-    email = fields.CharField(255, null=False)
-    password = fields.CharField(255, null=False)
+    username = fields.CharField(70, unique=True)
+    email = fields.CharField(255, unique=True)
+    password_hash = fields.CharField(128)
 
     class Meta:
         table = "users"
 
-
-class RoleModel(MyAbstractBaseModel, NameMixin, TimestampMixin):
-    class Meta:
-        table = "roles"
+    def __str__(self):
+        return self.username
