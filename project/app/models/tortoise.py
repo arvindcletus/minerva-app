@@ -3,6 +3,7 @@
 
 from tortoise import fields
 from tortoise.models import Model
+from tortoise.contrib.pydantic import pydantic_model_creator
 
 
 class TimestampMixin:
@@ -39,3 +40,6 @@ class UserModel(MyAbstractBaseModel, TimestampMixin):
 
     def __str__(self):
         return self.username
+
+
+RoleSchema = pydantic_model_creator(RoleModel)

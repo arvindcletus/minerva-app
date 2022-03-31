@@ -5,6 +5,7 @@ from fastapi import APIRouter, HTTPException
 
 from app.api import crud
 from app.models.pydantic import RolePayloadSchema, RoleResponseSchema
+from app.models.tortoise import RoleSchema
 
 
 router = APIRouter()
@@ -16,3 +17,11 @@ async def create_role(payload: RolePayloadSchema) -> RoleResponseSchema:
 
     response_object = {"id": role_id, "name": payload.name}
     return response_object
+
+
+@router.get("/{id}/", response_model=RoleSchema)
+async def read_role(id: int) -> RoleSchema:
+    role = await crud.get(id)
+    if not role:
+        raise HTTPException(status_code=404, detail="Role not found")
+    return role
