@@ -67,6 +67,8 @@ jobs:
             -e DATABASE_TEST_URL=sqlite://sqlite.db \
             -p 5003:8765 \
             ${{ env.IMAGE }}:latest
+      - name: Install requirements
+        run: docker exec minerva-app pip install bandit==1.7.4 black==22.3.0 flake8==4.0.1 isort==5.10.1 pytest==6.2.5 safety==1.10.3
       - name: Pytest
         run: docker exec minerva-app python -m pytest .
       - name: Flake8
