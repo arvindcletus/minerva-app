@@ -2,18 +2,21 @@
 
 
 import json
-import pytest
 
 from faker import Faker
 
 
-def generate_role_name():
+def generate_same_role_name(faker):
+    return faker.bothify(text="????-########")
+
+
+def generate_new_role_name():
     fake = Faker()
     return fake.bothify(text="????-########")
 
 
 def test_create_role_unique(faker, test_app_with_db):
-    role_name = faker.bothify(text="????-########")
+    role_name = generate_same_role_name(faker)
     response = test_app_with_db.post("/roles/", data=json.dumps({"name": role_name}))
 
     assert response.status_code == 201
@@ -21,19 +24,13 @@ def test_create_role_unique(faker, test_app_with_db):
 
 
 def test_create_role_duplicate(faker, test_app_with_db):
-    role_name = faker.bothify(text="????-########")
+    role_name = generate_same_role_name(faker)
     response = test_app_with_db.post("/roles/", data=json.dumps({"name": role_name}))
 
     assert response.status_code == 422
-    assert response.json() == {
-        "detail": [
-            {
-                "loc": [],
-                "msg": f'duplicate key value violates unique constraint "roles_name_key"\nDETAIL:  Key (name)=({role_name}) already exists.',
-                "type": "IntegrityError",
-            }
-        ]
-    }
+    response_dict = response.json()["detail"][0]
+    assert response_dict["loc"] == []
+    assert response_dict["type"] == "IntegrityError"
 
 
 def test_create_role_invalid_json(test_app):
@@ -51,7 +48,7 @@ def test_create_role_invalid_json(test_app):
 
 
 def test_view_role(test_app_with_db):
-    role_name = generate_role_name()
+    role_name = generate_new_role_name()
     response = test_app_with_db.post("/roles/", data=json.dumps({"name": role_name}))
     role_id = response.json()["id"]
 
@@ -71,7 +68,7 @@ def test_view_role_incorrect_id(test_app_with_db):
 
 
 def test_view_all_roles(test_app_with_db):
-    role_name = generate_role_name()
+    role_name = generate_new_role_name()
     response = test_app_with_db.post("/roles/", data=json.dumps({"name": role_name}))
     role_id = response.json()["id"]
 

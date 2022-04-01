@@ -7,7 +7,6 @@ from app.api import crud
 from app.models.pydantic import RolePayloadSchema, RoleResponseSchema
 from app.models.tortoise import RoleSchema
 
-
 router = APIRouter()
 
 
