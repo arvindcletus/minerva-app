@@ -77,3 +77,19 @@ def test_view_all_roles(test_app_with_db):
 
     response_list = response.json()
     assert len(list(filter(lambda d: d["id"] == role_id, response_list))) == 1
+
+
+def test_remove_role(test_app_with_db):
+    role_name = generate_new_role_name()
+    response = test_app_with_db.post("/roles/", data=json.dumps({"name": role_name}))
+    role_id = response.json()["id"]
+
+    response = test_app_with_db.delete(f"/roles/{role_id}/")
+    assert response.status_code == 200
+    assert response.json() == {"id": role_id, "name": role_name}
+
+
+def test_remove_role_incorrect_id(test_app_with_db):
+    response = test_app_with_db.delete("/roles/999/")
+    assert response.status_code == 404
+    assert response.json()["detail"] == "Role not found"

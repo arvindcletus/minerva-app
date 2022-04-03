@@ -25,3 +25,8 @@ async def get(id: int) -> Union[dict, None]:
 async def get_all() -> List:
     roles = await RoleModel.all().values()
     return roles
+
+
+async def delete(id: int) -> int:
+    role = await RoleModel.filter(id=id).first().delete()
+    return role

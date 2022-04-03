@@ -29,3 +29,14 @@ async def get_role(id: int) -> RoleSchema:
 @router.get("/", response_model=list[RoleSchema])
 async def get_all_roles() -> list[RoleSchema]:
     return await crud.get_all()
+
+
+@router.delete("/{id}/", response_model=RoleResponseSchema)
+async def delete_role(id: int) -> RoleResponseSchema:
+    role = await crud.get(id)
+    if not role:
+        raise HTTPException(status_code=404, detail="Role not found")
+
+    await crud.delete(id)
+
+    return role
